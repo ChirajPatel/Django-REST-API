@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django Rest Api</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.min.css'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+    </script>
+</head>
+<body style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+    <nav class="navbar navbar-expand-lg navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}" style="font-family:cursive;color:chartreuse;">Django Rest Framework</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Dropdown
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled">Disabled</a>
+                    </li> -->
+                </ul>
+                <div class="d-flex">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <a class="btn btn-secondary btn-sm" type="submit" href="{% url 'change_password' %}" id="changepassword">Change Password</a>
+                            <a class="btn btn-primary btn-sm" type="submit" href="{% url 'login_user' %}" id="loginBtn">Login &nbsp;<i class="bi bi-box-arrow-in-left"></i></a>
+                            <button type="button" onclick="Logout_user()" class="btn btn-danger btn-sm" type="submit" id="logoutBtn">Logout &nbsp;<i class="bi bi-box-arrow-in-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <!-- <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form> -->
+            </div>
+        </div>
+    </nav>
+    <div class="row" id="note">
+        <div class="col-sm-12 text-center text-danger alert alert-danger">
+            <h5><strong>Login to use more features</strong></h5>
+        </div>
+    </div>
+
+    {% block content %}
+
+    {% endblock %}
+
+    <!-- <footer>
+        <div class="text-center bg-dark text-light">
+            <p>Copyright &copy; All rights reserved. Chiraj Patel.</p>
+        </div>
+    </footer> -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>
+    <script>
+        let token = localStorage.getItem("token");
+        if (token) {
+            $("#note").hide();
+            loginBtn.remove();
+            $("#searchblock").show();
+        } else {
+            $("#note").show();
+            logoutBtn.remove();
+            changepassword.remove();
+            // $("#searchblock").hide();
+        }
+
+        function Logout_user() {
+            localStorage.removeItem("token")
+            window.location.href = "http://127.0.0.1:8000/login_user/"
+        }
+
+        function back(){
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+|----------------------------------------------------|
+|	COMMANDS FOR BASIC INSTALLATION		     |
+|----------------------------------------------------|
+| virtualenv ven				     |
+| pip install -r requirements.txt		     |
+|----------------------------------------------------|
+|FOR LISTING ALL PACKAGES INSTALLED IN DJANGO PROJECT|
+|----------------------------------------------------|
+| pip list					     |
+| pip freeze					     |
+|----------------------------------------------------|
+
+
+|----------------------------------------------------|
+|		  PROJECT COMMANDS		     |
+|----------------------------------------------------|
+| django-admin startproject projectname              |
+| django-admin startapp appname			     |
+|----------------------------------------------------|
+|     FOR MIGRATING SPECIFIC APPLICATION PROJECT     |
+|----------------------------------------------------|
+| python manage.py makemigrations appname            |
+| python manage.py migrate appname		     |
+|----------------------------------------------------|
+|        RUNSERVER ON SPECIFIC URL AND PORT          |
+|----------------------------------------------------|
+| python manage.py runserver 192.168.1.249:7001      |
+|----------------------------------------------------|

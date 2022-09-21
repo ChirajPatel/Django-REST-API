@@ -1,0 +1,510 @@
+{% extends 'Home/common.html' %}
+{% block content %}
+<style>
+.loader {
+  border-right: 16px dotted #00fd00; /* Light grey */
+  border-top: 16px dotted #003cff; /* Blue */
+  border-left: 16px dotted #ff0000;
+  border-bottom: 16px dotted #ffe600;
+  /* background-color: blue; */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+</style>
+    <form style="display: none;">
+        {% csrf_token %}
+    </form>
+    <br>
+
+
+    <div class="row container-fluid">
+        <div class="col-sm-8">
+            <div class="loader" style="margin-left: 40%;margin-top: 20%;display: none;" id="id_loader"></div>
+            <table class="table table-bordered table-hover text-center table-responsive" id="table-id">
+                <thead class="table-secondary">
+                    <!-- <tr id="searchblock">
+                        <td colspan="8">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <h5 style="margin-top: 4px;">Search:</h5>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control" id="search_first_name" placeholder="First name..." />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control" id="search_last_name" placeholder="Last name..." />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control" id="search_username" placeholder="Username..." />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control" id="search_email" placeholder="Email..." />
+                                    </div>
+                                    <div class="col-sm-2" style="text-align: right;">
+                                        <button type="button" onclick="Search()" class="btn btn-secondary btn-sm"><i class="bi bi-search"></i>&nbsp;&nbsp;Search</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </td>
+                    </tr> -->
+                    <tr>
+                        <td colspan="9">
+                            <div class="row">
+                                <div class="col-sm-7" style="text-align:left;">
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h4 style="margin-top: 30px;">Profiles</h4>
+                                        </div>
+                                    </div>
+                                    <!-- <input type="text" class="form-control" style="width:50%;" placeholder="Search here..." /> -->
+
+
+                                </div>
+                                <div class="form-group col-sm-5" style="text-align: right;">
+                                    <button onclick="addNew()" class="btn btn-secondary btn-sm" id="btn_add_new_profile"><i class="bi bi-plus"></i>&nbsp; Add
+                                        New</button>
+                                    <h6 class="mb-0 mt-3">Records per page&nbsp;
+
+                                        <select class="" name="state" id="maxRows">
+                                            <option value="5000">Show all</option>
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="15">15</option>
+                                            <option value="20">20</option>
+                                            <option value="50">50</option>
+                                            <option value="70">70</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </h6>
+
+                                </div>
+                            </div>
+                        </td>
+                        <!-- <td colspan="2">
+                            >
+                        </td> -->
+
+                    </tr>
+                    <tr>
+                        <th style="display: none;">Id</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                        <th>Print</th>
+                    </tr>
+                </thead>
+                <tbody id="id_body" >
+                    {% if data or data is not None or data != "" %}
+                        {% for info in data %}
+                        <tr id="id_row">
+                            <td style="display: none;">{{ info.id }}</td>
+                            <td style="width: 15%;">{{ info.first_name }}</td>
+                            <td style="width: 15%;">{{ info.last_name }}</td>
+                            <td style="width: 5%;">{{ info.username }}</td>
+                            <td style="width: 10%;">{{ info.email }}</td>
+                            <td style="width: 5%;">{{ info.phone }}</td>
+                            <td style="width: 40%;">{{ info.address }}</td>
+                            <td style="width: 5%;">
+                                <button type="button" onclick="editProfile({{ info.id }})" class="text-success btn btn-sm"
+                                    id="btn_edit_profile"><i class="bi bi-pencil-fill"></i></button>
+                            </td>
+                            <td style="width: 2.5%;">
+                                <button type="button" onclick="deleteProfile({{ info.id }})" class="text-danger btn btn-sm"><i
+                                        class="bi bi-trash-fill"></i></button>
+                            </td>
+                            <td style="width: 2.5%;">
+                                <button type="button" onclick="printProfile({{ info.id }})" class="text-primary btn btn-sm"><i
+                                        class="bi bi-printer"></i></button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr id="id_row">
+                            <td colspan="7" class="text-center text-danger">
+                                <h6>Data not found</h6>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+        </div>
+        <div class="col-sm-4">
+            <form style="background-color: rgb(224, 224, 224); padding: 30px; display: none; border-radius: 30px;" id="id_form" method="POST">{% csrf_token %}
+                <div class="mb-3">
+                    <h3 id="id_label_for_form"></h3>
+                    <hr>
+                </div>
+                <div class="mb-3" style="display: none;">
+                    <label for="id_profile_id" class="form-label">Id</label>
+                    <input type="text" class="form-control" id="id_profile_id" name="profile_id" value="">
+                    <input type="text" class="form-control" id="id_user_id" name="user" value="">
+                </div>
+                <div class="mb-3" id="id_div_username">
+                    <label for="id_username" class="form-label"><strong>Username</strong></label>
+                    <input type="text" class="form-control" id="id_username" name="username" value="">
+                </div>
+                <div class="mb-3" id="id_div_password">
+                    <label for="id_password" class="form-label"><strong>Password</strong></label>
+                    <input type="password" class="form-control" id="id_password" name="password" value="">
+                </div>
+                <div class="mb-3">
+                    <label for="id_first_name" class="form-label"><strong>First Name</strong></label>
+                    <input type="text" class="form-control" id="id_first_name" name="first_name" value="">
+                </div>
+                <div class="mb-3">
+                    <label for="id_last_name" class="form-label"><strong>Last Name</strong></label>
+                    <input type="text" class="form-control" id="id_last_name" name="last_name" value="">
+                </div>
+                <div class="mb-3">
+                    <label for="id_phone" class="form-label"><strong>Phone</strong></label>
+                    <input type="number" class="form-control" id="id_phone" name="phone" value="" min="0">
+                </div>
+                <div class="mb-3">
+                    <label for="id_email" class="form-label"><strong>Email address</strong></label>
+                    <input type="email" class="form-control" id="id_email" name="email" value="">
+                </div>
+                <div class="mb-3">
+                    <label for="id_address" class="form-label"><strong>Address</strong></label>
+                    <textarea class="form-control" id="id_address" name="address" rows="3" value=""></textarea>
+                </div>
+                <button type="button" class="btn btn-success btn-sm" onclick="saveProfile()">Save profile</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="Close()">Close</button>
+            </form>
+            <br>
+        </div>
+    </div>
+    <br><br>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>
+
+
+    <script>
+
+        // function Search(){
+        //     var postData = new FormData();
+        //     let token = localStorage.getItem("token");
+        //     postData.append('username', $("#search_username").val().trim());
+        //     postData.append('first_name', $("#search_first_name").val().trim());
+        //     postData.append('last_name', $("#search_last_name").val().trim());
+        //     postData.append('email', $("#search_email").val().trim());
+
+        //     axios({
+        //         method: "post",
+        //         url: "/search_profile/",
+        //         data: postData,
+        //         headers: { "Content-Type": "application/json", 'X-CSRFToken': '{{ csrf_token }}', Authorization: `Bearer ${token}`, },
+        //     }).then(function (response) {
+        //         if (response.data && response.data.code == 1) {
+        //             data = response.data.data
+        //             console.log("data", data);
+
+        //         }
+
+        //     })
+        // }
+
+
+
+        function deleteProfile(id) {
+            let confirmation = "Are you sure?";
+            if (confirm(confirmation) == true) {
+                let token = localStorage.getItem("token");
+                var postData = new FormData();
+                postData.append('profile_id', id);
+
+                $("#id_loader").show()
+                $("#table-id").hide()
+
+                setTimeout(function () {
+
+                    axios({
+                        method: "post",
+                        url: "http://192.168.1.249:7001/profile_delete/",
+                        data: postData,
+                        headers: { "Content-Type": "application/json", 'X-CSRFToken': '{{ csrf_token }}', Authorization: `Bearer ${token}`, },
+                    }).then(function (response) {
+                        if (response.data && response.data.code == 1) {
+                            $("#id_loader").hide();
+                            $("#table-id").show();
+                            swal("Successful!", response.data.msg , "success")
+                            $("#id_body").load(location.href + " #id_row");
+                        }
+                        else {
+                            $("#id_loader").hide();
+                            $("#table-id").show();
+                            swal("Oops!", "Something went wrong" , "error")
+                        }
+                    })
+                }, 2000);
+            } else {
+                location.reload();
+            }
+        }
+
+        function editProfile(id) {
+            $('#id_form').fadeIn()
+            $('#id_div_username').hide()
+            $('#id_div_password').hide()
+            $('#id_label_for_form').text('Edit Profile')
+            var postData = new FormData();
+            postData.append('profile_id', id);
+            let token = localStorage.getItem("token");
+
+            axios({
+                method: "post",
+                url: "http://192.168.1.249:7001/profile_edit_details/",
+                data: postData,
+                headers: { "Content-Type": "application/json", 'X-CSRFToken': '{{ csrf_token }}', Authorization: `Bearer ${token}`, },
+            }).then(function (response) {
+                if (response.data && response.data.code == 1) {
+                    $("#id_profile_id").val(response.data.edit_data[0]['id'])
+                    $("#id_user_id").val(response.data.edit_data[0]['user_id'])
+                    $("#id_first_name").val(response.data.edit_data[0]['first_name'])
+                    $("#id_last_name").val(response.data.edit_data[0]['last_name'])
+                    $("#id_phone").val(response.data.edit_data[0]['phone'])
+                    $("#id_email").val(response.data.edit_data[0]['email'])
+                    $("#id_address").val(response.data.edit_data[0]['address'])
+                }
+
+            })
+
+        }
+
+        function saveProfile() {
+            var postData = new FormData();
+            let token = localStorage.getItem("token");
+            postData.append('profile_id', $("#id_profile_id").val().trim());
+            postData.append('user_id', $("#id_user_id").val().trim());
+            postData.append('username', $("#id_username").val().trim());
+            postData.append('password', $("#id_password").val().trim());
+            postData.append('first_name', $("#id_first_name").val().trim());
+            postData.append('last_name', $("#id_last_name").val().trim());
+            postData.append('phone', $("#id_phone").val().trim());
+            postData.append('email', $("#id_email").val().trim());
+            postData.append('address', $("#id_address").val().trim());
+
+            $("#id_loader").show()
+            $("#table-id").hide()
+            setTimeout(function () {
+                axios({
+                    method: "post",
+                    url: "http://192.168.1.249:7001/profile_save/",
+                    data: postData,
+                    headers: { "Content-Type": "application/json", 'X-CSRFToken': '{{ csrf_token }}', Authorization: `Bearer ${token}`, },
+                }).then(function (response) {
+                    if (response.data && response.data.code == 1) {
+                        $("#id_loader").hide();
+                        $("#table-id").show();
+                        $("#id_form").hide();
+                        swal("Successful!", response.data.msg, "success")
+                        $("#id_body").load(location.href + " #id_row");
+                    }
+                    else if (response.data.code == 0) {
+                        $("#id_loader").hide();
+                        $("#table-id").show();
+                        swal("Oops!", response.data.msg, "error")
+                    }
+                })
+            }, 2000);
+        }
+
+        function printProfile(id) {
+            var postData = new FormData();
+            // let token = localStorage.getItem("token");
+            postData.append('profile_id', id);
+
+            axios({
+                method: "get",
+                url: "http://192.168.1.249:7001/pdf/",
+                // data: postData,
+                headers: { "Content-Type": "application/json", 'X-CSRFToken': '{{ csrf_token }}'},
+            }).then(function (response) {
+                if (response.data && response.data.code == 1) {
+                    console.log("response.data.code", response.data.code);
+                    swal("Successful!", response.data.msg, "success")
+                    .then((value) => {
+                        window.location.reload();
+                    });
+                }
+                else if (response.data.code == 0) {
+                    swal("Oops!", response.data.msg, "error")
+                }
+            })
+
+        }
+
+        function addNew(){
+            $('#id_form').fadeIn()
+            $("#id_form").trigger('reset');
+            $('#id_div_username').show()
+            $('#id_div_password').show()
+            $('#id_label_for_form').text('Add New Profile')
+        }
+
+        function Close(){
+            $('#id_form').fadeOut()
+        }
+
+
+        // ----------: Pagination code starts :----------
+        getPagination('#table-id');
+        //getPagination('.table-class');
+        //getPagination('table');
+
+        /*					PAGINATION
+        - on change max rows select options fade out all rows gt option value mx = 5
+        - append pagination list as per numbers of rows / max rows option (20row/5= 4pages )
+        - each pagination li on click -> fade out all tr gt max rows * li num and (5*pagenum 2 = 10 rows)
+        - fade out all tr lt max rows * li num - max rows ((5*pagenum 2 = 10) - 5)
+        - fade in all tr between (maxRows*PageNum) and (maxRows*pageNum)- MaxRows
+        */
+
+
+        function getPagination(table) {
+            var lastPage = 1;
+
+            $('#maxRows')
+                .on('change', function (evt) {
+                    //$('.paginationprev').html('');						// reset pagination
+
+                    lastPage = 1;
+                    $('.pagination')
+                        .find('li')
+                        .slice(1, -1)
+                        .remove();
+                    var trnum = 0; // reset tr counter
+                    var maxRows = (parseInt($(this).val())) + 1; // get Max Rows from select option
+
+                    if (maxRows == 5000) {
+                        $('.pagination').hide();
+                    } else {
+                        $('.pagination').show();
+                    }
+
+                    var totalRows = $(table + ' tbody tr').length; // numbers of rows
+                    $(table + ' tr:gt(0)').each(function () {
+                        // each TR in  table and not the header
+                        trnum++; // Start Counter
+                        if (trnum > maxRows) {
+                            // if tr number gt maxRows
+
+                            $(this).hide(); // fade it out
+                        }
+                        if (trnum <= maxRows) {
+                            $(this).show();
+                        } // else fade in Important in case if it ..
+                    }); //  was fade out to fade it in
+                    if (totalRows > maxRows) {
+                        // if tr total rows gt max rows option
+                        var pagenum = Math.ceil(totalRows / maxRows); // ceil total(rows/maxrows) to get ..
+                        //	numbers of pages
+                        for (var i = 1; i <= pagenum;) {
+                            // for each page append pagination li
+                            $('.pagination #prev')
+                                .before(
+                                    '<li data-page="' +
+                                    i +
+                                    '">\
+                        <span>' +
+                                    i++ +
+                                    '<span class="sr-only">(current)</span></span>\
+                    </li>'
+                                )
+                                .show();
+                        } // end for i
+                    } // end if row count > max rows
+                    $('.pagination [data-page="1"]').addClass('active'); // add active class to the first li
+                    $('.pagination li').on('click', function (evt) {
+                        // on click each page
+                        evt.stopImmediatePropagation();
+                        evt.preventDefault();
+                        var pageNum = $(this).attr('data-page'); // get it's number
+
+                        var maxRows = parseInt($('#maxRows').val()); // get Max Rows from select option
+
+                        if (pageNum == 'prev') {
+                            if (lastPage == 1) {
+                                return;
+                            }
+                            pageNum = --lastPage;
+                        }
+                        if (pageNum == 'next') {
+                            if (lastPage == $('.pagination li').length - 2) {
+                                return;
+                            }
+                            pageNum = ++lastPage;
+                        }
+
+                        lastPage = pageNum;
+                        var trIndex = 0; // reset tr counter
+                        $('.pagination li').removeClass('active'); // remove active class from all li
+                        $('.pagination [data-page="' + lastPage + '"]').addClass('active'); // add active class to the clicked
+                        // $(this).addClass('active');					// add active class to the clicked
+                        limitPagging();
+                        $(table + ' tr:gt(0)').each(function () {
+                            // each tr in table not the header
+                            trIndex++; // tr index counter
+                            // if tr index gt maxRows*pageNum or lt maxRows*pageNum-maxRows fade if out
+                            if (
+                                trIndex > maxRows * pageNum ||
+                                trIndex <= maxRows * pageNum - maxRows
+                            ) {
+                                $(this).hide();
+                            } else {
+                                $(this).show();
+                            } //else fade in
+                        }); // end of for each tr in table
+                    }); // end of on click pagination list
+                    limitPagging();
+                })
+                .val(5)
+                .change();
+
+            // end of on select change
+
+            // END OF PAGINATION
+        }
+
+        function limitPagging() {
+            // alert($('.pagination li').length)
+
+            if ($('.pagination li').length > 7) {
+                if ($('.pagination li.active').attr('data-page') <= 3) {
+                    $('.pagination li:gt(5)').hide();
+                    $('.pagination li:lt(5)').show();
+                    $('.pagination [data-page="next"]').show();
+                } if ($('.pagination li.active').attr('data-page') > 3) {
+                    $('.pagination li:gt(0)').hide();
+                    $('.pagination [data-page="next"]').show();
+                    for (let i = (parseInt($('.pagination li.active').attr('data-page')) - 2); i <= (parseInt($('.pagination li.active').attr('data-page')) + 2); i++) {
+                        $('.pagination [data-page="' + i + '"]').show();
+
+                    }
+
+                }
+            }
+        }
+        // ----------: Pagination code ends: ----------
+    </script>
+
+{% endblock %}

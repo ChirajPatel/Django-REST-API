@@ -1,0 +1,71 @@
+{% extends 'Home/common.html' %}
+{% block content %}
+    <br>
+
+    <div class="row container-fluid" style="margin-top: 10%; margin-bottom: 10%;">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4" style="justify-content: center;align-items: center;">
+            <form style="background-color: rgb(224, 224, 224); padding: 30px; border-radius: 30px;"
+                method="POST" id="id_login_form">{% csrf_token %}
+                <div class="mb-3">
+                    <h3><i class="bi bi-person-circle"></i>&nbsp;Login</h3>
+                    <hr>
+                </div>
+
+                <div class="mb-3" id="id_div_username">
+                    <label for="id_username" class="form-label"><strong>Username</strong></label>
+                    <input type="text" class="form-control" id="id_username" name="username" value="">
+                </div>
+                <div class="mb-3" id="id_div_password">
+                    <label for="id_password" class="form-label"><strong>Password</strong></label>
+                    <input type="password" class="form-control" id="id_password" name="password" value="">
+                </div>
+
+                <button type="button" class="btn btn-primary btn-sm" onclick="userLogin()">Login</button>
+                <button type="reset" class="btn btn-danger btn-sm">Reset</button>
+
+                <br><br>
+
+                <!-- <div class="mb-3" id="id_div_password">
+                    <br>
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="">Forgot password?</button>
+
+                </div> -->
+            </form>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+
+
+    <script>
+        function userLogin() {
+            let formData = {
+                username: $("#id_username").val().trim(),
+                password: $("#id_password").val().trim(),
+            };
+
+            fetch("http://192.168.1.249:7001/api/token/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log("DATA:", data.access);
+                    if (data.access) {
+                        localStorage.setItem("token", data.access);
+                        window.location =
+                            "http://127.0.0.1:8000/home/";
+                    } else {
+                        swal("Sorry!", "Username or Password is incorrect!", "error");
+
+                    }
+                });
+
+        }
+
+    </script>
+
+{% endblock %}
